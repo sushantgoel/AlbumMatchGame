@@ -29,26 +29,12 @@ namespace AlbumCoverMatchGame
     public sealed partial class MainPage : Page
     {
         private ObservableCollection<Song> songs;
+        private ObservableCollection<StorageFile> allSongs;
         public MainPage()
         {
             this.InitializeComponent();
 
             songs = new ObservableCollection<Song>();
-        }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
-        {
-            //Get Access to Music Library
-            StorageFolder folder = KnownFolders.MusicLibrary;
-            var allSongs = new ObservableCollection<StorageFile>();
-            await retrieveFilesInFolders(allSongs, folder);
-
-            //Choose random songs from Library
-            var randomSongs = await pickRandomSongs(allSongs);
-
-            //Pluck off meta data from selected songs
-            await populateSongList(randomSongs); 
-
         }
 
         private async Task retrieveFilesInFolders(ObservableCollection<StorageFile> list,StorageFolder parent)
@@ -115,6 +101,43 @@ namespace AlbumCoverMatchGame
                 songs.Add(song);
                 id++;
             }
+        }
+
+        private void songGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            startupProgressRing.IsActive = true;
+            allSongs = await setupMusicList();
+            await prepareNewGame();
+            startupProgressRing.IsActive = false;
+        }
+
+        private void playAgainButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async Task<ObservableCollection<StorageFile>> setupMusicList()
+        {
+            //Get Access to Music Library
+            StorageFolder folder = KnownFolders.MusicLibrary;
+            var allSongs = new ObservableCollection<StorageFile>();
+            await retrieveFilesInFolders(allSongs, folder);
+            return allSongs;
+        }
+
+        private async Task prepareNewGame()
+        {
+            songs.Clear();
+            //Choose random songs from Library
+            var randomSongs = await pickRandomSongs(allSongs);
+
+            //Pluck off meta data from selected songs
+            await populateSongList(randomSongs);
         }
     }
 }

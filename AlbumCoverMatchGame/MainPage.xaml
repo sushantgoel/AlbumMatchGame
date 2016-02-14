@@ -5,9 +5,55 @@
     xmlns:local="using:AlbumCoverMatchGame"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="Page_Loaded"
+    xmlns:data="using:AlbumCoverMatchGame.Models"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Content="Click Me" Click="Button_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <ProgressBar Name="myProgressBar" Maximum="100" Minimum="0" Value="100" Height="20" Foreground="Blue" Margin="20"/>
+            <TextBlock Name="InstructionTextBlock" Text="" Foreground="Blue" HorizontalAlignment="Center"/>
+            <MediaElement Name="myMediaElement" AutoPlay="True"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="20">
+            <GridView Name="songGridView" 
+                      IsItemClickEnabled="True" 
+                      ItemClick="songGridView_ItemClick"
+                      ItemsSource="{x:Bind songs}">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="data:Song">
+                        <Grid>
+                            <Image Name="albumArtImage" Height="75" Width="75" Source="{x:Bind AlbumCover}"/>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+
+            <TextBlock Name="resultTextBlock"/>
+            <TextBlock Name="titletextBlock"/>
+            <TextBlock Name="artistTextBlock"/>
+            <TextBlock Name="albumTextBlock"/>
+            <Button Name="playAgainButton" 
+                    Content="Play Again" 
+                    Background="Red" 
+                    HorizontalAlignment="Center"
+                    Click="playAgainButton_Click"
+                    Visibility="Collapsed"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <ProgressRing Name="startupProgressRing" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Height="200"
+                          Width="100"
+                          Foreground="Gray"/>
+        </Grid>
     </Grid>
 </Page>
