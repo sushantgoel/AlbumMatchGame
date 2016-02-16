@@ -151,15 +151,15 @@ namespace AlbumCoverMatchGame
             {
                 InstructionTextBlock.Text = string.Format("Game Over ... You scored: {0}", _totalScore);
                 playAgainButton.Visibility = Visibility.Visible;
+                
             }
             else
             {
                 startCoolDown();
             }
-            startCoolDown();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             startupProgressRing.IsActive = true;
             allSongs = await setupMusicList();
@@ -169,9 +169,10 @@ namespace AlbumCoverMatchGame
             startCoolDown();
         }
 
-        private void playAgainButton_Click(object sender, RoutedEventArgs e)
+        private async void playAgainButton_Click(object sender, RoutedEventArgs e)
         {
-
+            await prepareNewGame();
+            playAgainButton.Visibility = Visibility.Collapsed;
         }
 
         private async Task<ObservableCollection<StorageFile>> setupMusicList()
@@ -191,6 +192,17 @@ namespace AlbumCoverMatchGame
 
             //Pluck off meta data from selected songs
             await populateSongList(randomSongs);
+
+            startCoolDown();
+
+            //State management
+            InstructionTextBlock.Text = "Get Ready....";
+            resultTextBlock.Text = "";
+            artistTextBlock.Text = "";
+            albumTextBlock.Text = "";
+            titletextBlock.Text = "";
+            _totalScore = 0;
+            _round = 0;
         }
 
         private void startCoolDown()
