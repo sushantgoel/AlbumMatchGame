@@ -19,6 +19,8 @@ using Windows.Storage.FileProperties;
 using AlbumCoverMatchGame.Models;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Store;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,6 +31,7 @@ namespace AlbumCoverMatchGame
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public LicenseInformation AppLicenseInformation { get; set; }
         private ObservableCollection<Song> songs;
         private ObservableCollection<StorageFile> allSongs;
         bool _playingMusic = false;
@@ -246,6 +249,69 @@ namespace AlbumCoverMatchGame
 
                 //Start countdown   
                 startCountDown();
+            }
+        }
+
+        private async void purchaseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!AppLicenseInformation.ProductLicenses["MyInAppOfferToken"].IsActive)
+            {
+                try
+                {
+                    // The customer doesn't own this feature, so 
+                    // show the purchase dialog.
+
+                    PurchaseResults results = await CurrentAppSimulator.RequestProductPurchaseAsync("RemoveAdsOffer");
+
+                    //Check the license state to determine if the in-app purchase was successful.
+
+                    if (results.Status == ProductPurchaseStatus.Succeeded)
+                    {
+                        AdMediator_D1B3F5.Visibility = Visibility.Collapsed;
+                        purchaseButton.Visibility = Visibility.Collapsed;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // The in-app purchase was not completed because 
+                    // an error occurred.
+                    throw ex;
+                }
+            }
+            else
+            {
+                // The customer already owns this feature.
+            }
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            // Remove these lines of code before publishing!
+            // The actual CurrentApp will create a WindowsStoreProxy.xml
+            // in the package's \LocalState\Microsoft\Windows Store\ApiData
+            // folder where it stores the actual purchases.
+            // Here we're just giving it a fake version of that file
+            // for testing.
+            StorageFolder proxyDataFolder = await Package.Current.InstalledLocation.GetFolderAsync("Assets");
+            StorageFile proxyFile = await proxyDataFolder.GetFileAsync("test.xml");
+            await CurrentAppSimulator.ReloadSimulatorAsync(proxyFile);
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+            // You may want to put this at the App level
+            AppLicenseInformation = CurrentAppSimulator.LicenseInformation;
+
+            if (AppLicenseInformation.ProductLicenses["RemoveAdsOffer"].IsActive)
+            {
+                // Customer can access this feature.
+                AdMediator_D1B3F5.Visibility = Visibility.Collapsed;
+                purchaseButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                // Customer can NOT access this feature.
+                AdMediator_D1B3F5.Visibility = Visibility.Visible;
+                purchaseButton.Visibility = Visibility.Visible;
             }
         }
     }

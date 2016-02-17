@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:AlbumCoverMatchGame.Models"
     xmlns:Universal="using:Microsoft.AdMediator.Universal"
+    Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -81,7 +82,13 @@
                                      Height="90" 
                                      Id="AdMediator-Id-9C09C871-160C-47A5-B7D0-9C24730CEACB" 
                                      Grid.Row="2" 
+                                     Visibility="Collapsed"
                                      VerticalAlignment="Top" 
-                                     Width="728"/>
+                                     Width="500"/>
+        <Button Name="purchaseButton" 
+                Click="purchaseButton_Click"
+                Grid.Row="2"
+                HorizontalAlignment="Right"
+                Content="Remove Ads"/>
     </Grid>
 </Page>
